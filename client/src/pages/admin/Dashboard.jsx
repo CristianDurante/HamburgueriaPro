@@ -12,11 +12,22 @@ import {
 import { api } from '../../api.js';
 import { formatMoney, ORDER_STATUS } from '../../utils/format.js';
 
+const EMPTY_STATS = {
+  ordersToday: 0,
+  revenueToday: 0,
+  pending: 0,
+  totalOrders: 0,
+  topProducts: [],
+  recentOrders: [],
+};
+
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
-    api.get('/admin/stats').then(setStats).catch(() => {});
+    api.get('/admin/stats').then((data) => {
+      setStats({ ...EMPTY_STATS, ...(data || {}) });
+    }).catch(() => setStats(EMPTY_STATS));
   }, []);
 
   if (!stats) {

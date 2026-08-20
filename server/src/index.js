@@ -48,7 +48,11 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Erro interno do servidor' });
 });
 
-const PORT = Number(process.env.PORT) || 3001;
-app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
-});
+export default app;
+
+if (!process.env.VERCEL) {
+  const PORT = Number(process.env.PORT) || 3001;
+  app.listen(PORT, () => {
+    console.log(`Servidor rodando em http://localhost:${PORT}`);
+  });
+}
