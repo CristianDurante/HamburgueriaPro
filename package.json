@@ -1,0 +1,21 @@
+{
+  "name": "burguer-prime",
+  "version": "1.0.0",
+  "description": "Plataforma de pedidos para hamburgueria com painel administrativo e integração WhatsApp",
+  "private": true,
+  "scripts": {
+    "dev": "node server/src/index.js",
+    "dev:server": "node server/src/index.js",
+    "dev:client": "npm --prefix client run dev",
+    "seed": "node server/src/seed.js",
+    "start": "node server/src/index.js",
+    "build": "npm --prefix client run build"
+  },
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "engines": {
+    "node": ">=18"
+  }
+}
