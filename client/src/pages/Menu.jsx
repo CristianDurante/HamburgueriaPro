@@ -12,18 +12,21 @@ export default function Menu() {
   const [products, setProducts] = useState([]);
   const [promos, setPromos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [params, setParams] = useSearchParams();
   const activeSlug = params.get('categoria') || 'todos';
   const { addItem } = useCart();
   const { config, hours, open: isOpen, openStatus } = useStore();
 
   useEffect(() => {
+    setError('');
     Promise.all([api.get('/categories'), api.get('/products'), api.get('/promotions')])
       .then(([c, p, pr]) => {
         setCategories(c);
         setProducts(p);
         setPromos(pr);
       })
+      .catch((err) => setError(err.message || 'Não foi possível carregar o cardápio.'))
       .finally(() => setLoading(false));
   }, []);
 
@@ -112,6 +115,13 @@ export default function Menu() {
       {loading ? (
         <div className="spinner-wrap">
           <div className="spinner" />
+        </div>
+      ) : error ? (
+        <div className="empty-state">
+          <p className="muted-text">{error}</p>
+          <button className="btn btn-primary" onClick={() => window.location.reload()}>
+            Tentar novamente
+          </button>
         </div>
       ) : shown.length === 0 ? (
         <p className="muted-text">Nenhum produto nesta categoria.</p>

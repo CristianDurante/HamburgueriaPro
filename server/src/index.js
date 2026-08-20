@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import 'dotenv/config';
 import './db.js';
+import './seed.js';
 import authRoutes from './routes/auth.js';
 import publicRoutes from './routes/public.js';
 import orderRoutes from './routes/orders.js';

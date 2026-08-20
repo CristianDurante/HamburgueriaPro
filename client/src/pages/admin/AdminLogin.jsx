@@ -63,7 +63,7 @@ export default function AdminLogin() {
               />
             </div>
           </div>
-          <button className="btn btn-primary btn-lg btn-block" disabled={loading}>
+          <button type="submit" className="btn btn-primary btn-lg btn-block" disabled={loading}>
             {loading ? <Loader2 size={20} className="spin" /> : 'Entrar'}
           </button>
           <button type="button" className="btn btn-ghost btn-block" onClick={() => navigate('/')}>
