@@ -7,7 +7,10 @@ import 'dotenv/config';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const DB_PATH =
-  process.env.DB_PATH || join(__dirname, '..', 'data', 'hamburgueria.db');
+  process.env.DB_PATH ||
+  (process.env.VERCEL
+    ? join(process.env.TMPDIR || '/tmp', 'hamburgueria.db')
+    : join(__dirname, '..', 'data', 'hamburgueria.db'));
 
 mkdirSync(dirname(DB_PATH), { recursive: true });
 
