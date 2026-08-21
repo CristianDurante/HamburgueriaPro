@@ -41,7 +41,7 @@ export default function AdminSettings() {
           whatsapp_number: onlyDigits(s.whatsappNumber || s.whatsapp || ''),
           pix_key: s.pixKey || '',
         });
-        setHours(h);
+        setHours(Array.isArray(h) ? h : []);
       })
       .catch(() => {});
   }, []);

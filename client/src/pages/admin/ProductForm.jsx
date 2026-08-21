@@ -33,8 +33,8 @@ export default function ProductForm() {
   useEffect(() => {
     Promise.all([api.get('/admin/categories'), api.get('/admin/addons')])
       .then(([c, a]) => {
-        setCategories(c);
-        setAddons(a);
+        setCategories(Array.isArray(c) ? c : []);
+        setAddons(Array.isArray(a) ? a : []);
       })
       .catch(() => {});
     if (isEdit) {

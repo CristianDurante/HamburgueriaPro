@@ -14,8 +14,8 @@ export default function AdminProducts() {
 
   async function load() {
     const [p, c] = await Promise.all([api.get('/admin/products'), api.get('/admin/categories')]);
-    setProducts(p);
-    setCategories(c);
+    setProducts(Array.isArray(p) ? p : []);
+    setCategories(Array.isArray(c) ? c : []);
   }
 
   useEffect(() => {

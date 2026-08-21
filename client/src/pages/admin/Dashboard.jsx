@@ -26,7 +26,12 @@ export default function Dashboard() {
 
   useEffect(() => {
     api.get('/admin/stats').then((data) => {
-      setStats({ ...EMPTY_STATS, ...(data || {}) });
+      setStats({
+        ...EMPTY_STATS,
+        ...(data || {}),
+        topProducts: Array.isArray(data?.topProducts) ? data.topProducts : [],
+        recentOrders: Array.isArray(data?.recentOrders) ? data.recentOrders : [],
+      });
     }).catch(() => setStats(EMPTY_STATS));
   }, []);
 

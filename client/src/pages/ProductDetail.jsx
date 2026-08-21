@@ -47,6 +47,7 @@ export default function ProductDetail() {
 
   const hasPromo = product.promo_price != null && product.promo_price < product.price;
   const basePrice = hasPromo ? product.promo_price : product.price;
+  const addons = Array.isArray(product.addons) ? product.addons : [];
   const addonsTotal = Object.values(selected).reduce((s, a) => s + Number(a.price || 0), 0);
   const unitTotal = basePrice + addonsTotal;
   const total = unitTotal * quantity;
@@ -92,11 +93,11 @@ export default function ProductDetail() {
             {hasPromo && <span className="badge badge-promo">Oferta</span>}
           </div>
 
-          {product.addons.length > 0 && (
+          {addons.length > 0 && (
             <div className="addons-section">
               <h3>Adicionais</h3>
               <div className="addons-grid">
-                {product.addons.map((addon) => {
+                {addons.map((addon) => {
                   const active = !!selected[addon.id];
                   return (
                     <button

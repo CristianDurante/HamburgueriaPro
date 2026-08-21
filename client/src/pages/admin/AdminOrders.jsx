@@ -15,7 +15,7 @@ export default function AdminOrders() {
     setLoading(true);
     try {
       const data = await api.get(`/admin/orders${status !== 'all' ? `?status=${status}` : ''}`);
-      setOrders(data);
+      setOrders(Array.isArray(data) ? data : []);
     } finally {
       setLoading(false);
     }
@@ -98,7 +98,7 @@ export default function AdminOrders() {
                   <div className="order-card-body">
                     <div className="order-details-grid">
                       <div className="order-items">
-                        {o.items.map((it) => {
+                        {(Array.isArray(o.items) ? o.items : []).map((it) => {
                           const adds = addons(it);
                           return (
                             <div className="summary-item" key={it.id}>

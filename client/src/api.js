@@ -8,7 +8,12 @@ async function request(path, options = {}) {
   };
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+  let res;
+  try {
+    res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+  } catch {
+    throw new Error('Não foi possível conectar ao servidor. Verifique se a API está online.');
+  }
 
   if (res.status === 401) {
     const isAdmin = path.startsWith('/admin/');
@@ -18,14 +23,15 @@ async function request(path, options = {}) {
   }
 
   let data = null;
+  const contentType = res.headers.get('content-type') || '';
   try {
-    data = await res.json();
+    if (contentType.includes('application/json')) data = await res.json();
   } catch {
     data = null;
   }
 
-  if (!res.ok) {
-    const message = data?.error || data?.message || 'Erro ao comunicar com o servidor';
+  if (!res.ok || !contentType.includes('application/json')) {
+    const message = data?.error || data?.message || `Servidor indisponível (HTTP ${res.status})`;
     const err = new Error(message);
     err.status = res.status;
     err.data = data;

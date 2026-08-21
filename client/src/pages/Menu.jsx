@@ -22,9 +22,9 @@ export default function Menu() {
     setError('');
     Promise.all([api.get('/categories'), api.get('/products'), api.get('/promotions')])
       .then(([c, p, pr]) => {
-        setCategories(c);
-        setProducts(p);
-        setPromos(pr);
+        setCategories(Array.isArray(c) ? c : []);
+        setProducts(Array.isArray(p) ? p : []);
+        setPromos(Array.isArray(pr) ? pr : []);
       })
       .catch((err) => setError(err.message || 'Não foi possível carregar o cardápio.'))
       .finally(() => setLoading(false));

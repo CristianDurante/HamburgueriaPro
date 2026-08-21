@@ -32,9 +32,9 @@ export default function Home() {
       api.get('/categories'),
     ])
       .then(([f, p, c]) => {
-        setFeatured(f);
-        setPromos(p);
-        setCategories(c);
+        setFeatured(Array.isArray(f) ? f : []);
+        setPromos(Array.isArray(p) ? p : []);
+        setCategories(Array.isArray(c) ? c : []);
       })
       .catch(() => {});
   }, []);
