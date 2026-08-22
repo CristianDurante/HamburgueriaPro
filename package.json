@@ -1,6 +1,7 @@
 {
   "name": "burguer-prime",
   "version": "1.0.0",
+  "type": "module",
   "description": "Plataforma de pedidos para hamburgueria com painel administrativo e integração WhatsApp",
   "private": true,
   "scripts": {
@@ -16,6 +17,6 @@
     "client"
   ],
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   }
 }
