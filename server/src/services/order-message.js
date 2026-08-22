@@ -16,7 +16,12 @@ function line(name, value) {
 function buildItems(items) {
   return items
     .map((it) => {
-      const addons = JSON.parse(it.addons_json || '[]');
+      let addons = [];
+      try {
+        addons = JSON.parse(it.addons_json || '[]');
+      } catch {
+        addons = [];
+      }
       const addonText =
         addons.length > 0
           ? `\n   Adicionais: ${addons.map((a) => a.name).join(', ')}`

@@ -3,7 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import 'dotenv/config';
-import './db.js';
+import { uploadsDir } from './db.js';
 import './seed.js';
 import authRoutes from './routes/auth.js';
 import publicRoutes from './routes/public.js';
@@ -22,7 +22,7 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '1mb' }));
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(uploadsDir));
 
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 
@@ -38,12 +38,22 @@ app.use('/api/admin/orders', adminOrders);
 app.use('/api/admin/settings', adminSettings);
 app.use('/api/admin/stats', adminStats);
 
+app.use((req, res) => {
+  res.status(404).json({ error: 'Rota não encontrada' });
+});
+
 app.use((err, req, res, next) => {
-  if (err && err.message === 'Payload Too Large') {
+  if (err?.type === 'entity.too.large' || err?.status === 413 || err?.code === 'LIMIT_FILE_SIZE') {
     return res.status(413).json({ error: 'Dados enviados são muito grandes' });
   }
   if (err && err.message && err.message.includes('Apenas imagens')) {
     return res.status(400).json({ error: err.message });
+  }
+  if (err?.code === 'SQLITE_CONSTRAINT_FOREIGNKEY') {
+    return res.status(400).json({ error: 'Referência inválida nos dados enviados' });
+  }
+  if (err?.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+    return res.status(409).json({ error: 'Já existe um registro com esses dados' });
   }
   console.error('[error]', err.message);
   res.status(500).json({ error: 'Erro interno do servidor' });

@@ -1,18 +1,22 @@
 import Database from 'better-sqlite3';
 import { mkdirSync } from 'fs';
+import { tmpdir } from 'os';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import 'dotenv/config';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const DB_PATH =
-  process.env.DB_PATH ||
-  (process.env.VERCEL
-    ? join(process.env.TMPDIR || '/tmp', 'hamburgueria.db')
-    : join(__dirname, '..', 'data', 'hamburgueria.db'));
+const DB_PATH = process.env.VERCEL
+  ? join(tmpdir(), 'hamburgueria.db')
+  : process.env.DB_PATH || join(__dirname, '..', 'data', 'hamburgueria.db');
+
+export const uploadsDir = process.env.VERCEL
+  ? join(tmpdir(), 'hamburgueria-uploads')
+  : join(__dirname, '..', 'uploads');
 
 mkdirSync(dirname(DB_PATH), { recursive: true });
+mkdirSync(uploadsDir, { recursive: true });
 
 export const db = new Database(DB_PATH);
 db.pragma('journal_mode = WAL');

@@ -1,14 +1,8 @@
 import { Router } from 'express';
 import multer from 'multer';
 import path from 'path';
-import { mkdirSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { db } from '../db.js';
+import { db, uploadsDir } from '../db.js';
 import { requireAdmin } from '../middleware/auth.js';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const uploadsDir = path.join(__dirname, '..', 'uploads');
-mkdirSync(uploadsDir, { recursive: true });
 
 const storage = multer.diskStorage({
   destination: uploadsDir,
