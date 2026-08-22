@@ -1,10 +1,15 @@
 import { isMainThread, workerData, Worker } from 'worker_threads';
-import Database from 'better-sqlite3';
 import { mkdirSync } from 'fs';
 import { tmpdir } from 'os';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import 'dotenv/config';
+
+const connectionString =
+  process.env.DATABASE_URL ||
+  process.env.POSTGRES_URL ||
+  process.env.POSTGRES_PRISMA_URL ||
+  process.env.SUPABASE_DB_URL;
 
 if (!isMainThread) {
   const run = async () => {
@@ -29,9 +34,10 @@ if (!isMainThread) {
 }
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const usePostgres = Boolean(process.env.DATABASE_URL);
+const usePostgres = Boolean(connectionString);
 if (usePostgres && !isMainThread) process.exit(0);
 if (process.env.VERCEL && !usePostgres) throw new Error('DATABASE_URL não configurada na Vercel');
+const sqliteModule = usePostgres ? null : await import('better-sqlite3');
 
 export const uploadsDir = process.env.VERCEL ? join(tmpdir(), 'hamburgueria-uploads') : join(__dirname, '..', 'uploads');
 mkdirSync(uploadsDir, { recursive: true });
@@ -45,7 +51,7 @@ function postgresQuery(sql, params) {
   const buffer = new SharedArrayBuffer(4 + 8 * 1024 * 1024);
   const state = new Int32Array(buffer);
   const worker = new Worker(new URL('./db.js', import.meta.url), {
-    workerData: { connectionString: process.env.DATABASE_URL, sql: replacePlaceholders(sql), params, buffer },
+    workerData: { connectionString, sql: replacePlaceholders(sql), params, buffer },
   });
   Atomics.wait(state, 0, 0);
   const size = Math.abs(state[0]);
@@ -80,6 +86,7 @@ function createPostgresDb() {
 }
 
 function createSqliteDb() {
+  const Database = sqliteModule.default;
   const dbPath = process.env.DB_PATH || join(__dirname, '..', 'data', 'hamburgueria.db');
   mkdirSync(dirname(dbPath), { recursive: true });
   const db = new Database(dbPath);
