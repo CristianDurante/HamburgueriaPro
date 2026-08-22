@@ -3,7 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import 'dotenv/config';
-import { uploadsDir } from './db.js';
+import { db, uploadsDir } from './db.js';
 import './seed.js';
 import authRoutes from './routes/auth.js';
 import publicRoutes from './routes/public.js';
@@ -24,7 +24,15 @@ app.use(express.json({ limit: '1mb' }));
 
 app.use('/uploads', express.static(uploadsDir));
 
-app.get('/api/health', (req, res) => res.json({ ok: true }));
+app.get('/api/health', (req, res) => {
+  try {
+    db.prepare('SELECT 1 AS ok').get();
+    res.json({ ok: true, database: 'connected' });
+  } catch (error) {
+    console.error('[health]', error.message);
+    res.status(503).json({ ok: false, database: 'unavailable', error: error.message });
+  }
+});
 
 app.use('/api', publicRoutes);
 app.use('/api/orders', orderRoutes);

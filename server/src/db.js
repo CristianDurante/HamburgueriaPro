@@ -14,7 +14,12 @@ const connectionString =
 if (!isMainThread) {
   const run = async () => {
     const { Client } = await import('pg');
-    const client = new Client({ connectionString: workerData.connectionString, ssl: { rejectUnauthorized: false } });
+    const client = new Client({
+      connectionString: workerData.connectionString,
+      ssl: { rejectUnauthorized: false },
+      connectionTimeoutMillis: 10000,
+      query_timeout: 10000,
+    });
     try {
       await client.connect();
       const result = await client.query(workerData.sql, workerData.params);
